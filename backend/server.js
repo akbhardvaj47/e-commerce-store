@@ -35,18 +35,3 @@ const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
-import path from "path";
-import { fileURLToPath } from "url";
-
-// Ye lines top ke imports ke niche likho
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Serve frontend build
-const frontendPath = path.resolve(__dirname, "../frontend/dist");
-app.use(express.static(frontendPath));
-
-// React Router fallback (important)
-app.get("*", (req, res) => {
-  res.sendFile(path.join(frontendPath, "index.html"));
-});
