@@ -1,0 +1,7 @@
+@import "tailwindcss";
+body{
+    background: #f4f3f3;
+}
+.contact form input, textarea{
+    box-shadow: 0px 0px 5px 3px rgba(225, 89, 186, 0.74);
+}
