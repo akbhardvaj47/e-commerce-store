@@ -2,10 +2,11 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
+  const url=`${import.meta.env.VITE_BACKEND_URL}`
 
 function ForgotPassword() {
   const navigate = useNavigate()
-  const URL = 'http://localhost:8080/api/auth/forget-password'
+  const URL = `${url}/api/auth/forget-password`
   const [user, setUser] = useState({
     email: "",
     password: "",

@@ -33,7 +33,7 @@ const UpdateProduct = () => {
     // Get categories
     const getAllCategories = async () => {
         try {
-            const res = await axios.get('http://localhost:8080/api/category/categories/')
+            const res = await axios.get(`${url}/api/category/categories/`)
             setCategories(res.data.categories)
 
         } catch (error) {
@@ -42,7 +42,7 @@ const UpdateProduct = () => {
     }
     const getProductBySlug = async () => {
         try {
-            const res = await axios.get(`http://localhost:8080/api/products/product/${slug}`, {
+            const res = await axios.get(`${url}/api/products/product/${slug}`, {
                 headers: {
                     Authorization: token
                 }
@@ -58,7 +58,7 @@ const UpdateProduct = () => {
         e.preventDefault();
         try {
             const res = await axios.put(
-                `http://localhost:8080/api/products/update-product/${product._id}`,
+                `${url}/api/products/update-product/${product._id}`,
                 product,
                 {
                     headers: {

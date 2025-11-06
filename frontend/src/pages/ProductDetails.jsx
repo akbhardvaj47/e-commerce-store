@@ -9,11 +9,11 @@ export default function ProductDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const token = JSON.parse(localStorage.getItem("auth"))?.token;
-
+  const url=`${import.meta.env.VITE_BACKEND_URL}`
   useEffect(() => {
     const fetchSingleProduct = async () => {
       try {
-        const res = await fetch(`http://localhost:8080/api/products/product/${slug}`, {
+        const res = await fetch(`${url}/api/products/product/${slug}`, {
           method: "GET",
           headers: {
             Authorization: token,
@@ -38,7 +38,7 @@ const handleAddToCart = async () => {
       alert("Please login to add items to cart.");
       return;
     }
-    const res = await fetch("http://localhost:8080/api/cart/add", {
+    const res = await fetch(`${url}/api/cart/add`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

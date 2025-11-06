@@ -1,35 +1,31 @@
 import ItemCard from "../pages/ItemCard";
 import { useEffect, useState } from "react";
-import { useAuth } from "../context/auth";
 
 export default function Home() {
   const [categories, setCategories] = useState([]);
   const [product, setProduct] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [auth] = useAuth();
 
-  const CATEGORY_URL = "http://localhost:8080/api/category/categories";
-  const PRODUCT_URL = "http://localhost:8080/api/products/";
 
-  // Fetch categories
-  const fetchAllCategories = async () => {
+  const url = `${import.meta.env.VITE_BACKEND_URL}`
+
+
+  const fetchAllCategories=async()=>{
     try {
-      const res = await fetch(CATEGORY_URL, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
-      const data = await res.json();
-      setCategories(data.categories);
+      const res=await fetch(`${url}/api/category`);
+      const data=await res.json()
+      setCategories(data.categories)
+      
     } catch (error) {
-      console.log(error);
+      console.log("Error in fetching category",error);
     }
-  };
+  }
 
   // Fetch all products
   const fetchAllProducts = async () => {
     try {
-      const res = await fetch(PRODUCT_URL);
+      const res = await fetch(`${url}/api/products`);
       const data = await res.json();
       setProduct(data.products);
       setFilteredProducts(data.products);
@@ -50,13 +46,15 @@ export default function Home() {
       setSelectedCategory(null);
       setFilteredProducts(product);
     } else {
-      setSelectedCategory(categoryId);      
+      setSelectedCategory(categoryId);
       const filtered = product.filter(
         (p) => p.category && p.category._id === categoryId
       );
       setFilteredProducts(filtered);
     }
   };
+
+  
 
   const banners = [
     "https://graphicsfamily.com/wp-content/uploads/edd/2022/11/Simple-E-commerce-Banner-Design-1024x576.jpg",

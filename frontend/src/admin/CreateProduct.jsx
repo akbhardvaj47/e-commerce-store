@@ -11,6 +11,7 @@ const CreateProduct = () => {
     const [auth]=useAuth()
     const token = auth.token
     const createdByUserId=auth.userId
+    const url=`${import.meta.env.VITE_BACKEND_URL}`
     const [formData, setFormData] = useState({
         name: "",
         description: "",
@@ -37,7 +38,7 @@ const CreateProduct = () => {
         setLoading(true)
         setError(false)
         try {
-            const res = await fetch('http://localhost:8080/api/products/create-product/', {
+            const res = await fetch(`${url}/api/products/create-product/`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -71,7 +72,7 @@ const CreateProduct = () => {
         setError(false);
 
         try {
-            const res = await fetch('http://localhost:8080/api/category/categories/', {
+            const res = await fetch(`${url}/api/category/categories/`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",

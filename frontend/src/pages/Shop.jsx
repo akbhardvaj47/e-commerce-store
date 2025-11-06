@@ -6,8 +6,9 @@ export default function Shop() {
   const [products, setProducts] = useState([]);
   const [filtered, setFiltered] = useState([]);
   const location = useLocation();
+    const url=`${import.meta.env.VITE_BACKEND_URL}`
 
-  const PRODUCT_URL = "http://localhost:8080/api/products/";
+  const PRODUCT_URL = `${url}/api/products/`;
 
   const fetchProducts = async () => {
     try {

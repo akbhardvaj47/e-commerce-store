@@ -3,6 +3,7 @@ import { useAuth } from '../context/auth';
 import toast from 'react-hot-toast';
 
 const AdminUsers = () => {
+    const url=`${import.meta.env.VITE_BACKEND_URL}`
     const [auth] = useAuth();
     const [users, setUsers] = useState([]);
     const [showModal, setShowModal] = useState(false);
@@ -16,7 +17,7 @@ const AdminUsers = () => {
         if (!auth.token) return;
 
         try {
-            const res = await fetch("http://localhost:8080/api/auth/admin/users", {
+            const res = await fetch(`${url}/api/auth/admin/users/`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -40,7 +41,7 @@ const AdminUsers = () => {
 
     const deleteUser = async (id) => {
         try {
-            const res = await fetch(`http://localhost:8080/api/auth/admin/users/delete-user/${id}`, {
+            const res = await fetch(`${url}/api/auth/admin/users/delete-user/${id}`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
@@ -68,7 +69,7 @@ const AdminUsers = () => {
     const updateUser = async (e, id) => {
         try {
             e.preventDefault()
-            const res = await fetch(`http://localhost:8080/api/auth/admin/users/update-user/${id}`, {
+            const res = await fetch(`${url}/api/auth/admin/users/update-user/${id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

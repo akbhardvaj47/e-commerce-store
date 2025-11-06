@@ -6,11 +6,13 @@ export default function CartPage() {
   const navigate = useNavigate();
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(true);
+  const url=`${import.meta.env.VITE_BACKEND_URL}`
+
 
   const fetchCart = async () => {
     try {
       const token = JSON.parse(localStorage.getItem("auth"))?.token;
-      const res = await fetch("http://localhost:8080/api/cart", {
+      const res = await fetch(`${url}/api/cart`, {
         headers: { Authorization: token },
       });
       const data = await res.json();
@@ -30,7 +32,7 @@ export default function CartPage() {
     if (!window.confirm("Remove this item from your cart?")) return;
     try {
       const token = JSON.parse(localStorage.getItem("auth"))?.token;
-      await fetch(`http://localhost:8080/api/cart/remove/${productId}`, {
+      await fetch(`${url}/api/cart/remove/${productId}`, {
         method: "DELETE",
         headers: { Authorization: token },
       });
@@ -45,7 +47,7 @@ export default function CartPage() {
     if (newQty < 1) return;
     try {
       const token = JSON.parse(localStorage.getItem("auth"))?.token;
-      await fetch(`http://localhost:8080/api/cart/update`, {
+      await fetch(`${url}/api/cart/update`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

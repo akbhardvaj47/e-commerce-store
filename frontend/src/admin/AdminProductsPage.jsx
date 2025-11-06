@@ -4,6 +4,7 @@ import { NavLink, Outlet } from 'react-router-dom';
 import toast from "react-hot-toast";
 
 const AdminProductsPage = () => {
+  const url=`${import.meta.env.VITE_BACKEND_URL}`
   const [auth] = useAuth();
   // console.log(auth);
   const token=auth.token;
@@ -16,7 +17,7 @@ const AdminProductsPage = () => {
   // Get all products
   const fetchProducts = async () => {
     setLoading(true)
-    const res = await fetch('http://localhost:8080/api/products/');
+    const res = await fetch(`${url}/api/products/`);
     const data = await res.json();
     if (data.status) setProducts(data.products);
     setLoading(false)
@@ -29,7 +30,7 @@ const AdminProductsPage = () => {
 
   // Handle product deletion
   const handleDelete = async (id) => {
-    const res = await fetch(`http://localhost:8080/api/products/delete-product/${id}`, {
+    const res = await fetch(`${url}/api/products/delete-product/${id}`, {
       method: 'DELETE',
       headers:{
         Authorization:token

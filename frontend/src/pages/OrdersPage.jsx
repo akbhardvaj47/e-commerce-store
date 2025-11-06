@@ -5,12 +5,13 @@ export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+    const url=`${import.meta.env.VITE_BACKEND_URL}`
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
         const token = JSON.parse(localStorage.getItem("auth"))?.token;
-        const res = await fetch("http://localhost:8080/api/orders/myorders", {
+        const res = await fetch(`${url}/api/orders/myorders`, {
           headers: { Authorization: token },
         });
         const data = await res.json();

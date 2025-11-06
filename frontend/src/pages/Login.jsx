@@ -3,12 +3,13 @@ import { assets } from "../assets/assets";
 import { useState } from "react";
 import { useAuth } from "../context/auth";
 import toast from "react-hot-toast";
+  const url=`${import.meta.env.VITE_BACKEND_URL}`
 
 function LoginPage() {
   const location=useLocation();
   const navigate = useNavigate()
   const [auth, setAuth]=useAuth();
-  const URL = 'http://localhost:8080/api/auth/login'
+  const URL = `${url}/api/auth/login`
   const [loginUser, setLoginUser] = useState({
     email: "",
     password: ""

@@ -9,6 +9,6 @@ categoryRoute.post('/create-category', requireSignIn, checkIsAdmin ,createCatego
 categoryRoute.put('/update-category/:id', requireSignIn, checkIsAdmin ,updateCategory );
 categoryRoute.delete('/delete-category/:id', requireSignIn, checkIsAdmin ,deleteCategory );
 
-categoryRoute.get('/categories', getAllCategory );
+categoryRoute.get('/', getAllCategory );
 
 export default categoryRoute

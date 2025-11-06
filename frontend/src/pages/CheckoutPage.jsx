@@ -7,13 +7,14 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1); // Step control
   const navigate = useNavigate();
+    const url=`${import.meta.env.VITE_BACKEND_URL}`
 
   // Fetch cart data
   useEffect(() => {
     const fetchCart = async () => {
       try {
         const token = JSON.parse(localStorage.getItem("auth"))?.token;
-        const res = await fetch("http://localhost:8080/api/cart", {
+        const res = await fetch(`${url}/api/cart`, {
           headers: { Authorization: token },
         });
         const data = await res.json();
@@ -42,7 +43,7 @@ export default function CheckoutPage() {
     const token = JSON.parse(localStorage.getItem("auth"))?.token;
 
     try {
-      const res = await fetch("http://localhost:8080/api/orders/create", {
+      const res = await fetch(`${url}/api/orders/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

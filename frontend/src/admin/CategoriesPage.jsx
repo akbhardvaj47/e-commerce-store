@@ -6,6 +6,7 @@ import { NavLink } from 'react-router-dom';
 // Done this page with admin crud
 
 const CategoriesPage = () => {
+    const url=`${import.meta.env.VITE_BACKEND_URL}`
   const [auth] = useAuth();
   const [categories, setCategories] = useState([]);
   const [isEditing, setIsEditing] = useState(false)
@@ -19,7 +20,7 @@ const CategoriesPage = () => {
   // Fetch all / Read categories
   const fetchAllCategories = async () => {
     try {
-      const res = await fetch('http://localhost:8080/api/category/categories', {
+      const res = await fetch(`${url}/api/category/`, {
         method: "GET",
         headers: {
           'Content-Type': 'application/json',
@@ -40,7 +41,7 @@ const CategoriesPage = () => {
   // Delete Category
   const deleteCat = async (id) => {
     try {
-      const res = await fetch(`http://localhost:8080/api/category/delete-category/${id}`, {
+      const res = await fetch(`${url}/api/category/delete-category/${id}`, {
         method: "DELETE",
         headers: {
           'Content-Type': 'application/json',
@@ -58,7 +59,7 @@ const CategoriesPage = () => {
   // Update Category
   const updateCategory = async (id) => {
     try {
-      const res = await fetch(`http://localhost:8080/api/category/update-category/${id}`, {
+      const res = await fetch(`${url}/api/category/update-category/${id}`, {
         method: "PUT",
         headers: {
           'Content-Type': 'application/json',
@@ -78,7 +79,7 @@ const CategoriesPage = () => {
   // create category
   const createCategory = async () => {
     try {
-      const res = await fetch('http://localhost:8080/api/category/create-category', {
+      const res = await fetch(`{url}/api/category/create-category`, {
         method: "POST",
         headers: {
           'Content-Type': "application/json",

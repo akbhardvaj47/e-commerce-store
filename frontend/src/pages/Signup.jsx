@@ -2,25 +2,27 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
-
+const url = `${import.meta.env.VITE_BACKEND_URL}`
 function Signup() {
-  const URL='http://localhost:8080/api/auth/signup'
-  const navigate= useNavigate()
-  const [user, setUser]=useState({
-    name:"",
-    email:"",
-    phone:"",
-    password:"",
+  const URL = `${url}/api/auth/signup`
+  const navigate = useNavigate()
+  const [user, setUser] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
   })
 
-  const handleChange=async(e)=>{
+  const handleChange = async (e) => {
     setUser(
-    {  ...user,
-      [e.target.name] : e.target.value}
+      {
+        ...user,
+        [e.target.name]: e.target.value
+      }
     )
   }
 
-  const handleSubmit=async (e)=>{
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const res = await fetch(URL, {
@@ -28,11 +30,11 @@ function Signup() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(user),
       });
-      if(!res.ok){
+      if (!res.ok) {
         toast.error("Failed to sign up")
         // console.log("Failed to sign up");
       }
-      const data=await res.json()
+      const data = await res.json()
       toast.success("User registered successfully")
       // console.log(data);
       navigate('/login')
