@@ -30,7 +30,7 @@ import CheckoutPage from "./pages/CheckoutPage";
 import OrdersPage from "./pages/OrdersPage";
 
 export default function App() {
-  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+  const token=JSON.parse(localStorage.getItem("auth"))?.token
   return (
     <>
       <Navbar />
@@ -71,7 +71,8 @@ export default function App() {
         <Route path="/orders" element={<OrdersPage/>}/>
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
-      {isLoggedIn && <Footer />}
+      {token && <Footer />}
+      {/* <Footer/> */}
     </>
   );
 }

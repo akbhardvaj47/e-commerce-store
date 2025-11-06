@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 export default function Home() {
   const [categories, setCategories] = useState([]);
   const [product, setProduct] = useState([]);
+  const [loading, setLoading]=useState(false)
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
 
@@ -13,9 +14,11 @@ export default function Home() {
 
   const fetchAllCategories=async()=>{
     try {
+      setLoading(true)
       const res=await fetch(`${url}/api/category`);
       const data=await res.json()
       setCategories(data.categories)
+      setLoading(false)
       
     } catch (error) {
       console.log("Error in fetching category",error);
@@ -25,10 +28,12 @@ export default function Home() {
   // Fetch all products
   const fetchAllProducts = async () => {
     try {
+      setLoading(true)
       const res = await fetch(`${url}/api/products`);
       const data = await res.json();
       setProduct(data.products);
       setFilteredProducts(data.products);
+      setLoading(false)
     } catch (error) {
       console.log(error);
     }
@@ -62,6 +67,8 @@ export default function Home() {
     "https://graphicsfamily.com/wp-content/uploads/edd/2021/07/Shop-Products-Social-Media-Banner-Design-Template-1180x664.jpg",
     "https://image.freepik.com/free-vector/shopping-vector-trendy-banner_36298-512.jpg",
   ];
+
+  if(loading) return <p className=" text-center">Loading Products...</p>
 
   return (
     <div className="mx-auto p-6">
