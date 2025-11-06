@@ -14,7 +14,8 @@ export default function CheckoutPage() {
     const fetchCart = async () => {
       try {
         const token = JSON.parse(localStorage.getItem("auth"))?.token;
-        const res = await fetch(`${url}/api/cart`, {
+        const res = await fetch(`${url}/api/cart/`, {
+          method:'GET',
           headers: { Authorization: token },
         });
         const data = await res.json();
@@ -54,10 +55,12 @@ export default function CheckoutPage() {
       });
 
       const data = await res.json();
+      console.log(data);
+      
       setLoading(false);
 
       if (data.success) {
-        alert("🎉 Order placed successfully!");
+        alert("Order placed successfully!");
         navigate("/orders");
       } else {
         alert(data.message || "Failed to place order.");
