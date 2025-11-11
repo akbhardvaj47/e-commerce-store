@@ -1,18 +1,14 @@
-import { useEffect, useState } from 'react';
-import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/auth';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
-const ProtectedRoute = ({ children }) => {
-    const token=localStorage.getItem("auth");
-    const navigate=useNavigate()
-    const location=useLocation()
-    useEffect(()=>{
-        if(!token){
-            navigate('/login',{state:{from:location.pathname}})
-        }
-    },[token, location, navigate])
+const ProtectedRoute = () => {
+  const token = JSON.parse(localStorage.getItem("auth"))?.token;
+  const location = useLocation();
 
-    return token?<Outlet/>:<p>Loading....</p>
-}
+  if (!token) {
+    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+  }
+
+  return <Outlet />;
+};
 
 export default ProtectedRoute;

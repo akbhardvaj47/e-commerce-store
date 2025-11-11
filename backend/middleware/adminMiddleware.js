@@ -3,7 +3,7 @@ import User from "../models/userModel.js";
 const checkIsAdmin = async (req, res, next) => {
   try {
     const user = await User.findById(req.user._id);
-    if (!user || user.role !== 1) {
+    if (!user || user.role !== "admin") {
       return res.status(403).json({
         message: "User is not admin",
         status: false,

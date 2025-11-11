@@ -6,30 +6,34 @@ const AuthProvider = ({ children }) => {
   const [auth, setAuth] = useState({
     user: null,
     token: "",
-    email:""
+    email: "",
+    role: "",
   });
   
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const data = localStorage.getItem("auth");
     if (data) {
       const parsedData = JSON.parse(data);
-      // console.log("parsed",parsedData);
-
       setAuth({
-        username: parsedData.username,
+        user: parsedData.username,
         token: parsedData.token,
-        email:parsedData.email,
-        userId:parsedData.userId
+        email: parsedData.email,
+        userId: parsedData.userId,
+        role: parsedData.role,
       });
     }
+    setLoading(false);
   }, []);
-  
 
   return (
-    <AuthContext.Provider value={[auth, setAuth]}>
+    <AuthContext.Provider value={{ auth, setAuth, loading }}>
       {children}
     </AuthContext.Provider>
   );
 };
-const useAuth=()=>useContext(AuthContext)
-export { AuthContext, AuthProvider, useAuth };
+
+export const useAuth = () => useContext(AuthContext);
+
+export { AuthProvider };

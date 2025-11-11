@@ -20,6 +20,7 @@ export default function Home() {
       setCategories(data.categories)
       setLoading(false)
       
+      
     } catch (error) {
       console.log("Error in fetching category",error);
     }
@@ -68,7 +69,9 @@ export default function Home() {
     "https://image.freepik.com/free-vector/shopping-vector-trendy-banner_36298-512.jpg",
   ];
 
-  if(loading) return <p className=" text-center">Loading Products...</p>
+  if(loading) return <div className="absolute inset-0 flex justify-center items-center bg-white/70 z-50">
+          <div className="w-14 h-14 border-4 border-pink-600 border-t-transparent rounded-full animate-spin"></div>
+        </div>
 
   return (
     <div className="mx-auto p-6">

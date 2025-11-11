@@ -9,12 +9,11 @@ import Signup from "./pages/Signup";
 import ProductDetails from "./pages/ProductDetails";
 import AddItems from "./pages/AddItems";
 import Contact from "./pages/Contact";
-import './index.css'
+import "./index.css";
 import NotFoundPage from "./components/NotFoundPage";
 import ProtectedRoute from "./Routes/ProtectedRoute";
-import Profile from "./user/UserDashboard";
 import ForgotPassword from "./pages/ForgotPassword";
-import toast, { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from "react-hot-toast";
 import AdminDashboard from "./admin/AdminDashboard";
 import AdminUsers from "./admin/AdminUsers";
 import UserOrders from "./user/UserOrders";
@@ -28,51 +27,54 @@ import UpdateProduct from "./admin/UpdateProduct";
 import Shop from "./pages/Shop";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrdersPage from "./pages/OrdersPage";
+import AdminRoute from "./Routes/AdminRoute"
+import SearchPage from "./pages/SearchPage";
 
 export default function App() {
-  const token=JSON.parse(localStorage.getItem("auth"))?.token
+  const token = JSON.parse(localStorage.getItem("auth"))?.token;
+
   return (
     <>
       <Navbar />
       <Toaster />
       <Routes>
+        {/* Public */}
         <Route path="/" element={<Home />} />
-
+        <Route path="/shop" element={<Shop />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/search" element={<SearchPage />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/product/:slug" element={<ProductDetails />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/forget-password" element={<ForgotPassword />} />
+      <Route path="/cart" element={<ProtectedRoute/>}>
+      <Route index element={<CartPage/>}/>
+      </Route>
+        {/* Protected User Routes */}
         <Route path="/user" element={<ProtectedRoute />}>
-          <Route path="" element={<UserDashboard />}>
-            <Route path="profile" element={<UserProfile />} />
-            <Route path="orders" element={<UserOrders />} />
-            <Route path="settings" element={<UserSettings />} />
-          </Route>
+          <Route index element={<UserDashboard />} />
+          <Route path="profile" element={<UserProfile />} />
+          <Route path="orders" element={<UserOrders />} />
+          <Route path="settings" element={<UserSettings />} />
         </Route>
 
-
-        <Route path="/admin" element={<AdminDashboard />}>
+        {/* Protected Admin Routes */}
+        <Route path="/admin" element={<AdminRoute />}>
+          <Route index element={<AdminDashboard />} />
           <Route path="users" element={<AdminUsers />} />
-          <Route path="contacts" element={<Profile />} />
+          {/* <Route path="contacts" element={<Profile />} /> */}
           <Route path="products" element={<AdminProductsPage />} />
           <Route path="categories" element={<CategoriesPage />} />
-          <Route path="create-product" element={<CreateProduct/>} />
-          <Route path="/admin/update-product/:slug" element={<UpdateProduct />} />
+          <Route path="create-product" element={<CreateProduct />} />
+          <Route path="update-product/:slug" element={<UpdateProduct />} />
         </Route>
 
-
-        <Route path="/about" element={<About />} />
-        <Route path="/shop" element={<Shop />} />
-        <Route path="/shop/product/:slug" element={<ProductDetails />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/forget-password" element={<ForgotPassword />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/product/:slug" element={<ProductDetails />} />
-        <Route path="/add-items" element={<AddItems />} />
-        <Route path="/checkout" element={<CheckoutPage/>}/>
-        <Route path="/orders" element={<OrdersPage/>}/>
+        {/* 404 */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
+
       {token && <Footer />}
-      {/* <Footer/> */}
     </>
   );
 }

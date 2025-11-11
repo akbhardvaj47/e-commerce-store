@@ -9,7 +9,9 @@ const UpdateProduct = () => {
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
     const [categories, setCategories] = useState([])
-    const auth = JSON.parse(localStorage.getItem("auth"))
+    // const auth = JSON.parse(localStorage.getItem("auth"))
+    const { auth, setAuth } = useAuth();
+
     const token = auth.token
     const [product, setProduct] = useState({
         name: "",
@@ -32,22 +34,26 @@ const UpdateProduct = () => {
 
     // Get categories
     const getAllCategories = async () => {
+        setLoading(true);
         try {
             const res = await axios.get(`${url}/api/category/categories/`)
             setCategories(res.data.categories)
+            setLoading(false)
 
         } catch (error) {
-            console.log(error);
+            console.log("error fetching categories");
         }
     }
     const getProductBySlug = async () => {
+        setLoading(true);
         try {
             const res = await axios.get(`${url}/api/products/product/${slug}`, {
                 headers: {
                     Authorization: token
                 }
             })
-            setProduct(res.data.product)
+            setProduct(res.data.product);
+            setLoading(false);
 
         } catch (error) {
             console.log(error);
@@ -56,6 +62,7 @@ const UpdateProduct = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         try {
             const res = await axios.put(
                 `${url}/api/products/update-product/${product._id}`,
@@ -66,6 +73,7 @@ const UpdateProduct = () => {
                     }
                 }
             );
+            setLoading(false)
             navigate('/admin/products')
             toast.success("Product updated successfully")
         } catch (error) {
@@ -79,6 +87,11 @@ const UpdateProduct = () => {
     }, [slug])
     return (
         <div className="max-w-3xl mx-auto px-6 py-10">
+        {loading && (
+        <div className="absolute inset-0 flex justify-center items-center bg-white/70 z-50">
+          <div className="w-14 h-14 border-4 border-pink-600 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      )}
             <h2 className="text-3xl font-bold mb-6 text-center text-green-500">
                 Update Product
             </h2>

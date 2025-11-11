@@ -1,62 +1,75 @@
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { assets } from "../assets/assets";
 import { useState } from "react";
 import { useAuth } from "../context/auth";
 import toast from "react-hot-toast";
-  const url=`${import.meta.env.VITE_BACKEND_URL}`
+import { assets } from "../assets/assets";
+
+const url = `${import.meta.env.VITE_BACKEND_URL}`;
 
 function LoginPage() {
-  const location=useLocation();
-  const navigate = useNavigate()
-  const [auth, setAuth]=useAuth();
-  const URL = `${url}/api/auth/login`
+  const location = useLocation();
+  const navigate = useNavigate();
+  const {auth, setAuth} = useAuth();
+
   const [loginUser, setLoginUser] = useState({
     email: "",
-    password: ""
-  })
+    password: "",
+  });
+
   const handleChange = (e) => {
-    setLoginUser({
-      ...loginUser,
-      [e.target.name]: e.target.value
-    })
-  }
+    setLoginUser({ ...loginUser, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
-      const res = await fetch(URL, {
-        method: "Post",
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch(`${url}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json",
+          Authorization:auth.token
+         },
         body: JSON.stringify(loginUser),
-      })
-      if (!res.ok) {
-        console.log("Failed to login");
-      }
+      });
+
       const data = await res.json();
-      // console.log(data);
+      
+
+      if (!res.ok) {
+        toast.error(data.message || "Login failed");
+        return;
+      }
+
+      // ✅ Save to Context
       setAuth({
-        username:data.username,
-        token:data.token,
-        email:data.email
-      })
+        user: data.user,
+        token: data.token,
+        email: data.email,
+        userId: data.userId,
+        role: data.role, // ✅
+      });
 
-      localStorage.setItem("auth",JSON.stringify({
-        username:data.username,
-        token:data.token,
-        email:data.email,
-        userId:data.userId
-      }))
-      toast.success("User Login Successfully")
-      navigate(location.state?.from || '/')
-      // console.log(location.pathname)
+      localStorage.setItem(
+        "auth",
+        JSON.stringify({
+          user: data.user,
+          token: data.token,
+          email: data.email,
+          userId: data.userId,
+          role: data.role, // ✅
+        })
+      );
 
+      toast.success("User logged in successfully ✅");
+      if (data.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate(location.state?.from || "/");
+      }
     } catch (error) {
-      toast.error(error)
+      console.error(error);
+      toast.error("Something went wrong!");
     }
-  }
-
-
-  // localStorage.removeItem("isLoggedIn");
+  };
   return (
     <div
       className="min-h-screen p-8 flex items-center justify-center bg-gray-100"
@@ -82,7 +95,9 @@ function LoginPage() {
 
         <div className="col-span-1 flex items-center justify-center p-5">
           <form className="w-full max-w-md" onSubmit={handleSubmit}>
-            <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Login</h2>
+            <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">
+              Login
+            </h2>
 
             <div className="flex flex-col gap-3 mb-6">
               <button
@@ -132,11 +147,9 @@ function LoginPage() {
               Login
             </button>
 
-             <div className=" text-right mb-1 text-blue-600 underline">
-              <NavLink to='/forget-password'>
-                Forgot Password
-              </NavLink>
-             </div>
+            <div className=" text-right mb-1 text-blue-600 underline">
+              <NavLink to="/forget-password">Forgot Password</NavLink>
+            </div>
 
             {/* Signup Link */}
             <p className="text-sm text-center text-gray-600">

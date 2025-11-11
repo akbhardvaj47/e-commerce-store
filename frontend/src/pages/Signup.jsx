@@ -1,16 +1,17 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { useState } from "react";
+import axios from 'axios'
 import { toast } from "react-hot-toast";
-const url = `${import.meta.env.VITE_BACKEND_URL}`
+
 function Signup() {
-  const URL = `${url}/api/auth/signup`
   const navigate = useNavigate()
   const [user, setUser] = useState({
     name: "",
     email: "",
     phone: "",
     password: "",
+    answer:"",
   })
 
   const handleChange = async (e) => {
@@ -22,27 +23,25 @@ function Signup() {
     )
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await fetch(URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(user),
-      });
-      if (!res.ok) {
-        toast.error("Failed to sign up")
-        // console.log("Failed to sign up");
-      }
-      const data = await res.json()
-      toast.success("User registered successfully")
-      // console.log(data);
-      navigate('/login')
-    } catch (error) {
-      toast.error("Something went wrong!")
-      // console.log("Sign Up error",error);
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/signup`, user);
+    console.log(res);
+
+    if (res.status !== 200 && res.status !== 201) {
+      toast.error("Failed to sign up");
+      return;
     }
+
+    toast.success("User registered successfully");
+    navigate('/login');
+  } catch (error) {
+    console.error("Signup error:", error);
+    toast.error(error.response?.data?.message || "Something went wrong!");
   }
+};
+
   // console.log(user)
   return (
     <div

@@ -1,6 +1,6 @@
 import express from 'express'
 import { requireSignIn } from '../middleware/authMiddleware.js'
-import { addToCart, getCart, removeFromCart, updateCartQuantity } from '../controllers/cartController.js'
+import { addToCart, getCart, getCartByUser, removeFromCart, updateCartQuantity } from '../controllers/cartController.js'
 
 
 
@@ -12,6 +12,7 @@ cartRoutes.post('/add',requireSignIn,addToCart)
 
 // get user's cart items
 cartRoutes.get('/', requireSignIn, getCart)
+cartRoutes.get('/:userId',requireSignIn,getCartByUser)
 
 
 cartRoutes.delete("/remove/:productId", requireSignIn, removeFromCart);

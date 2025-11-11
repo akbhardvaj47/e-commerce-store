@@ -1,34 +1,34 @@
-import React, { useEffect, useState } from 'react';
-import { useAuth } from '../context/auth';
-import toast from 'react-hot-toast';
-import { NavLink } from 'react-router-dom';
-
-// Done this page with admin crud
+import React, { useEffect, useState } from "react";
+import { useAuth } from "../context/auth";
+import toast from "react-hot-toast";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 
 const CategoriesPage = () => {
-    const url=`${import.meta.env.VITE_BACKEND_URL}`
-  const [auth] = useAuth();
+  const url = `${import.meta.env.VITE_BACKEND_URL}`;
+  // const [auth] = useAuth();
+  const { auth, setAuth, loading } = useAuth();
+
   const [categories, setCategories] = useState([]);
-  const [isEditing, setIsEditing] = useState(false)
-  const [showForm, setShowForm] = useState(false)
+  const [isEditing, setIsEditing] = useState(false);
+  const [showForm, setShowForm] = useState(false);
   const [editCategoryId, setEditCategoryId] = useState(null);
-  const [newCategories, setNewCategories] = useState({
+  const [newCategory, setNewCategory] = useState({
     categoryName: "",
-    categoryImage: ""
+    categoryImage: "",
   });
 
-  // Fetch all / Read categories
+  // Fetch all categories
   const fetchAllCategories = async () => {
     try {
       const res = await fetch(`${url}/api/category/`, {
-        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: auth.token,
         },
       });
       const data = await res.json();
-      setCategories(data.categories);
+      setCategories(data.categories || []);
     } catch (error) {
       console.error(error);
     }
@@ -38,14 +38,14 @@ const CategoriesPage = () => {
     fetchAllCategories();
   }, []);
 
-  // Delete Category
-  const deleteCat = async (id) => {
+  // Delete category
+  const deleteCategory = async (id) => {
     try {
       const res = await fetch(`${url}/api/category/delete-category/${id}`, {
         method: "DELETE",
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: auth.token
+          "Content-Type": "application/json",
+          Authorization: auth.token,
         },
       });
       const data = await res.json();
@@ -56,180 +56,199 @@ const CategoriesPage = () => {
     }
   };
 
-  // Update Category
+  // Update category
   const updateCategory = async (id) => {
     try {
       const res = await fetch(`${url}/api/category/update-category/${id}`, {
         method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: auth.token,
         },
-        body: JSON.stringify(newCategories),
+        body: JSON.stringify(newCategory),
       });
       const data = await res.json();
       toast.success(data.message);
       fetchAllCategories();
-      setShowForm(false)
+      setShowForm(false);
     } catch (error) {
       console.error(error);
     }
   };
 
-  // create category
+  // Create category
   const createCategory = async () => {
+    if (!newCategory.categoryName.trim() || !newCategory.categoryImage.trim()) {
+      toast.error("Please fill all fields before submitting");
+      return;
+    }
     try {
-      const res = await fetch(`{url}/api/category/create-category`, {
+      const res = await fetch(`${url}/api/category/create-category`, {
         method: "POST",
         headers: {
-          'Content-Type': "application/json",
-          Authorization: auth.token
+          "Content-Type": "application/json",
+          Authorization: auth.token,
         },
-        body: JSON.stringify(newCategories)
-      })
-      const data = await res.json()
-      setNewCategories(data.category)
-      setShowForm(false)
-      toast.success("Category added successfully")
-      fetchAllCategories()
-      setNewCategories({
-        categoryImage: "",
-        categoryName: ""
-      })
-
+        body: JSON.stringify(newCategory),
+      });
+      const data = await res.json();
+      if (!data.status) {
+        toast.error(data.message);
+      } else {
+        toast.success("Category added successfully");
+      }
+      fetchAllCategories();
+      setShowForm(false);
+      setNewCategory({ categoryName: "", categoryImage: "" });
     } catch (error) {
-      console.log(error);
+      toast.error("Something went wrong while creating category");
+      // console.error("error in creating category");
     }
-  }
+  };
 
-  const handleChange = async (e) => {
-    setNewCategories({
-      ...newCategories, [e.target.name]: e.target.value
-    })
-  }
+  const handleChange = (e) => {
+    setNewCategory({ ...newCategory, [e.target.name]: e.target.value });
+  };
+
   return (
-    <div className=' relative'>
-      <div className="flex flex-col sm:flex-row justify-center sm:justify-between items-center p-3">
-        <h2 className="text-green-600 text-2xl font-bold mb-2 sm:m-0">All Categories</h2>
+    <div className="relative p-6">
+    {loading && (
+        <div className="absolute inset-0 flex justify-center items-center bg-white/70 z-50">
+          <div className="w-14 h-14 border-4 border-pink-600 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      )}
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
+        <h2 className="text-3xl font-bold text-yellow-600">
+          🗂️ Manage Categories
+        </h2>
         <button
           onClick={() => {
-            setShowForm(true)
-            setIsEditing(false)
+            setShowForm(true);
+            setIsEditing(false);
           }}
-          className="bg-green-600 cursor-pointer px-4 py-2 text-white font-bold rounded-2xl"
+          className="flex items-center gap-2 bg-pink-600 hover:bg-pink-700 text-white px-4 py-2 rounded-xl font-semibold shadow-md transition"
         >
-          Add New Category
+          <FaPlus /> Add New
         </button>
       </div>
 
-      <table className="w-full table-auto border-collapse shadow-md rounded overflow-hidden">
-        <thead>
-          <tr className="bg-pink-500 text-white uppercase text-sm leading-normal">
-            <th className="py-3 px-6 text-left">Name</th>
-            <th className="py-3 px-6 text-left">Image</th>
-            <th className="py-3 px-6 text-center">Actions</th>
-          </tr>
-        </thead>
-        <tbody className="text-gray-600 text-sm font-light">
+      {/* Category Grid */}
+      {categories.length === 0 ? (
+        <p className="text-center text-gray-600 mt-10">
+          No categories available.
+        </p>
+      ) : (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {categories.map((cat) => (
-            <tr
+            <motion.div
               key={cat._id}
-              className="border-b cursor-pointer border-gray-200 hover:bg-green-300 transition duration-200"
+              whileHover={{ scale: 1.02 }}
+              className="bg-white rounded-2xl shadow-md hover:shadow-xl transition overflow-hidden"
             >
-              <td className="py-3 px-6 text-left font-bold whitespace-nowrap">{cat.categoryName}</td>
-              <td className="py-3 px-6">
-                <img
-                  src={cat.categoryImage}
-                  alt={cat.categoryName}
-                  className="w-16 h-16 object-cover rounded"
-                />
-              </td>
-              <td className="py-3 px-6">
-                <div className="flex justify-center space-x-2">
+              <img
+                src={cat.categoryImage}
+                alt={cat.categoryName}
+                className="w-full h-40 object-cover"
+              />
+              <div className="p-4">
+                <h3 className="text-lg font-semibold text-gray-800">
+                  {cat.categoryName}
+                </h3>
+                <div className="flex justify-between items-center mt-4">
                   <button
                     onClick={() => {
-                      setShowForm(true)
-                      setIsEditing(true)
-                      setEditCategoryId(cat._id)
-                      setNewCategories({
+                      setIsEditing(true);
+                      setEditCategoryId(cat._id);
+                      setNewCategory({
                         categoryName: cat.categoryName,
-                        categoryImage: cat.categoryImage
-                      })
+                        categoryImage: cat.categoryImage,
+                      });
+                      setShowForm(true);
                     }}
-                    className="bg-blue-500 font-bold cursor-pointer hover:bg-blue-600 text-white px-4 py-1 rounded text-sm"
+                    className="flex items-center gap-1 text-blue-600 hover:text-blue-700 font-medium"
                   >
-                    Edit
+                    <FaEdit /> Edit
                   </button>
                   <button
-                    onClick={() => deleteCat(cat._id)}
-                    className="bg-pink-500 font-bold cursor-pointer hover:bg-pink-600 text-white px-4 py-1 rounded text-sm"
+                    onClick={() => deleteCategory(cat._id)}
+                    className="flex items-center gap-1 text-pink-600 hover:text-pink-700 font-medium"
                   >
-                    Delete
+                    <FaTrash /> Delete
                   </button>
                 </div>
-              </td>
-            </tr>
+              </div>
+            </motion.div>
           ))}
-        </tbody>
-      </table>
-      {showForm && (
-        <div className="absolute inset-0 bg-opacity-10 flex justify-center items-center -top-50" style={{ background: "#00000044" }}>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault()
-              isEditing ? updateCategory(editCategoryId) : createCategory()
-            }}
-            className="bg-white p-6 rounded-md shadow-md w-full max-w-md space-y-4"
-          >
-            <h2 className="text-xl font-semibold text-gray-700">
-              {isEditing ? "Update category" : "Add New Category"}
-            </h2>
+        </div>
+      )}
 
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">
+      {/* Add / Edit Modal */}
+      <AnimatePresence>
+        {showForm && (
+          <motion.div
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.form
+              onSubmit={(e) => {
+                e.preventDefault();
+                isEditing ? updateCategory(editCategoryId) : createCategory();
+              }}
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md"
+            >
+              <h2 className="text-2xl font-bold text-gray-700 mb-4">
+                {isEditing ? "✏️ Update Category" : "➕ Add Category"}
+              </h2>
+
+              <label className="block text-gray-600 font-medium mb-1">
                 Category Name
               </label>
               <input
                 type="text"
                 name="categoryName"
-                value={newCategories.categoryName}
+                value={newCategory.categoryName}
                 onChange={handleChange}
+                className="w-full border border-gray-300 rounded-lg p-2 mb-4 focus:ring-2 focus:ring-yellow-500 outline-none"
                 placeholder="Enter category name"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md"
               />
-            </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">
+              <label className="block text-gray-600 font-medium mb-1">
                 Category Image URL
               </label>
               <input
                 type="text"
                 name="categoryImage"
-                value={newCategories.categoryImage}
+                value={newCategory.categoryImage}
                 onChange={handleChange}
+                className="w-full border border-gray-300 rounded-lg p-2 mb-6 focus:ring-2 focus:ring-yellow-500 outline-none"
                 placeholder="Enter image URL"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md"
               />
-            </div>
 
-            <div className="flex justify-between">
-              <button
-                type="submit"
-                className="bg-pink-500 text-white px-4 py-2 rounded-md hover:bg-pink-600"
-              >
-                {isEditing ? "Update" : "Save"}
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowForm(false)}
-                className="text-red-600 underline">
-                Cancel
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
+              <div className="flex justify-between items-center">
+                <button
+                  type="submit"
+                  className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg font-semibold transition"
+                >
+                  {isEditing ? "Update" : "Save"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowForm(false)}
+                  className="text-gray-500 hover:text-red-600 font-medium"
+                >
+                  Cancel
+                </button>
+              </div>
+            </motion.form>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

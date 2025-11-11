@@ -85,3 +85,27 @@ export const updateCartQuantity = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+// GET /api/cart/:userId
+export const getCartByUser = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    const cart = await Cart.findOne({ user: userId });
+
+    if (!cart) {
+      return res.status(200).json({ success: true, count: 0 });
+    }
+
+    // total quantity sum krni ho to reduce() use karo
+    const totalCount = cart.products.reduce((acc, item) => acc + item.quantity, 0);
+
+    res.status(200).json({
+      success: true,
+      count: totalCount,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
