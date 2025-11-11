@@ -16,8 +16,8 @@ const app = express();
 // ✅ Define allowed origins
 const allowedOrigins = [
   'https://aktechmart.onrender.com',   // production
-  'http://localhost:3000',             // local dev
-  'https://your-other-domain.com'      // another allowed origin
+  'https://aktechstore.onrender.com' ,      
+  'http://localhost:5173',  
 ];
 
 // ✅ Configure CORS dynamically
