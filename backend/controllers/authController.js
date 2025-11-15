@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import User from "../models/userModel.js";
 import jwt from "jsonwebtoken";
+import sendEmail from "../utils/email.js";
 
 const register = async (req, res) => {
   try {
@@ -34,6 +35,52 @@ const register = async (req, res) => {
       role: role || "user",
     });
     await user.save();
+
+    const htmlMessage = `
+      <h2 style="color:#e91e63; font-family:Arial; text-align:center;">
+  Welcome to <strong>AkTechMart</strong>, ${name}! 👋
+</h2>
+
+<p style="font-size:16px; color:#333; font-family:Arial;">
+  We're excited to have you onboard! Your account has been created successfully, and you're all set to explore a seamless online shopping experience.
+</p>
+
+<div style="background:#f8f8f8; padding:15px; border-left:4px solid #e91e63; margin:20px 0;">
+  <p style="font-size:15px; font-family:Arial; margin:0;">
+    <strong>What you can do now:</strong>
+  </p>
+  <ul style="font-size:15px; font-family:Arial; line-height:1.6; color:#444;">
+    <li>Browse trending products across all categories</li>
+    <li>Add items to your wishlist or cart</li>
+    <li>Track your orders in real-time</li>
+    <li>Enjoy exclusive deals and limited-time offers</li>
+  </ul>
+</div>
+
+<p style="font-size:16px; font-family:Arial; color:#333;">
+  We're committed to making your shopping smooth, fast, and enjoyable.
+</p>
+
+<p style="text-align:center; margin-top:30px;">
+  <a href="https://your-frontend-url/login"
+     style="background:#e91e63; color:white; padding:12px 22px; 
+            text-decoration:none; border-radius:6px; 
+            font-size:16px; font-family:Arial;">
+    Login to Your Account
+  </a>
+</p>
+
+<br>
+
+<p style="font-size:16px; font-family:Arial; color:#333;">
+  Happy Shopping! 🛒  
+  <br>
+  <strong>— The AkTechMart Team</strong>
+</p>
+
+    `;
+
+    await sendEmail(email, "Welcome to MERN Store 🎉", htmlMessage);
 
     res.status(201).send({
       status: true,
