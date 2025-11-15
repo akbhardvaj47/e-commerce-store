@@ -5,23 +5,40 @@ export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-    const url=`${import.meta.env.VITE_BACKEND_URL}`
+  const url = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
         const token = JSON.parse(localStorage.getItem("auth"))?.token;
+
+        if (!token) {
+          alert("Please login first!");
+          navigate("/login");
+          return;
+        }
+
         const res = await fetch(`${url}/api/orders/myorders`, {
-          headers: { Authorization: token },
+          headers: { Authorization: `Bearer ${token}` },
         });
+
         const data = await res.json();
-        setOrders(data.orders || []);
+        console.log(data);
+        
+
+        if (data.success) {
+          setOrders(data.orders || []);
+        } else {
+          alert(data.message || "Failed to fetch orders");
+        }
       } catch (error) {
         console.error("Failed to fetch orders:", error);
+        alert("Something went wrong while fetching your orders.");
       } finally {
         setLoading(false);
       }
     };
+
     fetchOrders();
   }, []);
 
@@ -50,7 +67,7 @@ export default function OrdersPage() {
         </p>
         <button
           onClick={() => navigate("/")}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition"
+          className="bg-pink-600 hover:bg-pink-700 text-white px-6 py-2 rounded-lg font-semibold transition"
         >
           Start Shopping →
         </button>
@@ -66,7 +83,7 @@ export default function OrdersPage() {
             <h1 className="text-3xl font-bold text-gray-800">My Orders</h1>
             <button
               onClick={() => navigate("/")}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition"
+              className="bg-pink-600 hover:bg-pink-700 text-white px-4 py-2 rounded-lg font-semibold transition"
             >
               Continue Shopping
             </button>

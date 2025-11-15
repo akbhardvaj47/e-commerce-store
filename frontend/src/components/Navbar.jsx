@@ -53,9 +53,8 @@ export default function Navbar() {
         console.log("Error fetching cart count:", error);
       }
     };
-
     fetchCartLength();
-  }, [auth?.userId]);
+  },[cartCount,auth?.userId]);
 
   const onSearchSubmit = (e) => {
     e?.preventDefault();
@@ -68,10 +67,10 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-white border-b shadow-md sticky top-0 z-50">
+    <nav className="bg-white shadow-lg sticky top-0 z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3 md:py-4">
         {/* Brand */}
-        <NavLink to="/" className="text-2xl font-bold text-blue-600">
+        <NavLink to="/" className="text-2xl font-bold italic text-pink-600">
           AkTechMart
         </NavLink>
 
@@ -80,25 +79,25 @@ export default function Navbar() {
           <div className="flex items-center gap-6 font-medium">
             <NavLink
               to="/"
-              className="hover:text-blue-600 flex items-center gap-1"
+              className="hover:text-pink-600 flex items-center gap-1"
             >
               <Home size={18} /> Home
             </NavLink>
             <NavLink
               to="/shop"
-              className="hover:text-blue-600 flex items-center gap-1"
+              className="hover:text-pink-600 flex items-center gap-1"
             >
               <ShoppingBag size={18} /> Shop
             </NavLink>
             <NavLink
               to="/about"
-              className="hover:text-blue-600 flex items-center gap-1"
+              className="hover:text-pink-600 flex items-center gap-1"
             >
               <Info size={18} /> About
             </NavLink>
             <NavLink
               to="/contact"
-              className="hover:text-blue-600 flex items-center gap-1"
+              className="hover:text-pink-600 flex items-center gap-1"
             >
               <Phone size={18} /> Contact
             </NavLink>
@@ -107,18 +106,18 @@ export default function Navbar() {
           {/* Search - visible on md+ */}
           <form
             onSubmit={onSearchSubmit}
-            className="hidden lg:flex items-center gap-2 w-2/3"
+            className="hidden lg:flex items-center w-2/3"
             aria-label="Site search"
           >
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search products, categories..."
-              className="w-full px-4 py-2 rounded-l-2xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
+              className="w-full px-4 py-2 rounded-l-2xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-300"
             />
             <button
               type="submit"
-              className="px-4 py-2 rounded-r-2xl bg-blue-600 text-white font-semibold hover:bg-blue-700"
+              className="px-4 py-3  cursor-pointer rounded-r-2xl bg-pink-600 text-white font-semibold hover:bg-pink-700"
               aria-label="Search"
             >
               <Search size={16} />
@@ -134,7 +133,7 @@ export default function Navbar() {
               setMobileSearchOpen((s) => !s);
               setIsMenuOpen(false);
             }}
-            className="md:hidden text-gray-600 hover:text-blue-600"
+            className="md:hidden text-gray-600 hover:text-pink-600"
             aria-label="Toggle search"
           >
             <Search className="w-5 h-5" />
@@ -143,15 +142,13 @@ export default function Navbar() {
           {/* Cart */}
           <NavLink
             to="/cart"
-            className="relative text-gray-600 hover:text-blue-600"
+            className="relative text-gray-600 hover:text-pink-600"
             aria-label="View cart"
           >
             <ShoppingCart className="w-6 h-6" />
-            {cartCount > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-                {cartCount}
+                {cartCount>0?cartCount:0}
               </span>
-            )}
           </NavLink>
 
           {/* Admin quick nav - shows on md+ as a simple button */}
@@ -219,7 +216,7 @@ export default function Navbar() {
               setIsMenuOpen((s) => !s);
               setMobileSearchOpen(false);
             }}
-            className="lg:hidden text-gray-600 hover:text-blue-600"
+            className="lg:hidden text-gray-600 hover:text-pink-600"
             aria-label="Toggle menu"
           >
             {isMenuOpen ? (
@@ -243,7 +240,7 @@ export default function Navbar() {
             />
             <button
               type="submit"
-              className="px-4 py-2 rounded-r-2xl bg-blue-600 text-white font-semibold"
+              className="px-4 py-2 rounded-r-2xl bg-pink-600 text-white font-semibold"
               aria-label="Search"
             >
               <Search size={16} />
@@ -298,7 +295,7 @@ export default function Navbar() {
               />
               <button
                 type="submit"
-                className="px-3 py-2 rounded-r-lg bg-blue-600 text-white"
+                className="px-3 py-2 rounded-r-lg bg-pink-600 text-white"
                 aria-label="Search"
               >
                 <Search size={14} />

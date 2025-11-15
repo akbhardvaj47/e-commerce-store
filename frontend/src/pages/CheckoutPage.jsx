@@ -1,33 +1,48 @@
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 export default function CheckoutPage() {
   const [cart, setCart] = useState(null);
   const [address, setAddress] = useState("");
   const [loading, setLoading] = useState(false);
-  const [step, setStep] = useState(1); // Step control
+  const [paymentMethod, setPaymentMethod] = useState("COD");
+  const [step, setStep] = useState(1);
   const navigate = useNavigate();
-    const url=`${import.meta.env.VITE_BACKEND_URL}`
+
+  const url = import.meta.env.VITE_BACKEND_URL;
 
   // Fetch cart data
   useEffect(() => {
     const fetchCart = async () => {
       try {
         const token = JSON.parse(localStorage.getItem("auth"))?.token;
-        const res = await fetch(`${url}/api/cart/`, {
-          method:'GET',
-          headers: { Authorization: token },
+
+        const res = await fetch(`${url}/api/cart`, {
+          method: "GET",
+          headers: { Authorization: `Bearer ${token}` },
         });
+
         const data = await res.json();
+
+        if (!data?.products) {
+          alert("Unable to load cart!");
+          return;
+        }
+
         setCart(data);
       } catch (error) {
         console.error("Failed to fetch cart:", error);
       }
     };
+
     fetchCart();
   }, []);
 
-  if (!cart) return <p className="text-center mt-20 text-gray-600">Loading checkout details...</p>;
+  if (!cart)
+    return (
+      <p className="text-center mt-20 text-gray-600">Loading checkout details...</p>
+    );
 
   const subtotal = cart.products.reduce(
     (acc, item) => acc + item.product.discountedPrice * item.quantity,
@@ -41,6 +56,7 @@ export default function CheckoutPage() {
     }
 
     setLoading(true);
+
     const token = JSON.parse(localStorage.getItem("auth"))?.token;
 
     try {
@@ -48,20 +64,21 @@ export default function CheckoutPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: token,
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ shippingAddress: address,
-        paymentMethod: "COD", }),
+        body: JSON.stringify({
+          shippingAddress: address,
+          paymentMethod,
+        }),
       });
 
       const data = await res.json();
-      console.log(data);
-      
+
       setLoading(false);
 
       if (data.success) {
-        alert("Order placed successfully!");
-        navigate("/orders");
+        toast.success("Order placed successfully!");
+        navigate("/user/orders");
       } else {
         alert(data.message || "Failed to place order.");
       }
@@ -76,46 +93,44 @@ export default function CheckoutPage() {
     <div className="min-h-screen bg-gray-100 py-10">
       <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-md overflow-hidden border border-gray-200">
         <div className="p-8">
+
           {/* Checkout Header */}
-          <h1 className="text-3xl font-bold text-gray-800 mb-8 text-center">Secure Checkout</h1>
+          <h1 className="text-3xl font-bold text-gray-800 mb-8 text-center">
+            Secure Checkout
+          </h1>
 
           {/* Step Indicator */}
           <div className="flex justify-center mb-10">
             <div className="flex items-center">
-              <div
-                className={`rounded-full w-10 h-10 flex items-center justify-center text-white ${
-                  step >= 1 ? "bg-blue-600" : "bg-gray-400"
-                }`}
-              >
-                1
-              </div>
-              <div className={`h-1 w-16 ${step >= 2 ? "bg-blue-600" : "bg-gray-300"}`}></div>
-              <div
-                className={`rounded-full w-10 h-10 flex items-center justify-center text-white ${
-                  step >= 2 ? "bg-blue-600" : "bg-gray-400"
-                }`}
-              >
-                2
-              </div>
-              <div className={`h-1 w-16 ${step >= 3 ? "bg-blue-600" : "bg-gray-300"}`}></div>
-              <div
-                className={`rounded-full w-10 h-10 flex items-center justify-center text-white ${
-                  step >= 3 ? "bg-blue-600" : "bg-gray-400"
-                }`}
-              >
-                3
-              </div>
+              {[1, 2, 3].map((n) => (
+                <>
+                  <div
+                    className={`rounded-full w-10 h-10 flex items-center justify-center text-white ${
+                      step >= n ? "bg-blue-600" : "bg-gray-400"
+                    }`}
+                  >
+                    {n}
+                  </div>
+                  {n !== 3 && (
+                    <div
+                      className={`h-1 w-16 ${
+                        step > n ? "bg-blue-600" : "bg-gray-300"
+                      }`}
+                    ></div>
+                  )}
+                </>
+              ))}
             </div>
           </div>
 
-          {/* Step 1: Shipping Address */}
+          {/* Step 1 - Address */}
           {step === 1 && (
-            <div className="animate-fadeIn">
+            <div>
               <h2 className="text-xl font-semibold mb-4 text-gray-700">Shipping Address</h2>
+
               <textarea
                 className="w-full border border-gray-300 rounded-lg p-3 mb-6 focus:ring-2 focus:ring-blue-500 outline-none"
                 rows="3"
-                name="shippingAddress"
                 placeholder="Enter your full shipping address..."
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
@@ -128,6 +143,7 @@ export default function CheckoutPage() {
                 >
                   ← Back to Cart
                 </button>
+
                 <button
                   onClick={() => setStep(2)}
                   disabled={!address.trim()}
@@ -137,16 +153,17 @@ export default function CheckoutPage() {
                       : "bg-gray-400 cursor-not-allowed"
                   }`}
                 >
-                  Continue
+                  Continue →
                 </button>
               </div>
             </div>
           )}
 
-          {/* Step 2: Review Order */}
+          {/* Step 2 - Review Order */}
           {step === 2 && (
-            <div className="animate-fadeIn">
+            <div>
               <h2 className="text-xl font-semibold mb-4 text-gray-700">Review Your Order</h2>
+
               <div className="divide-y divide-gray-200 border border-gray-200 rounded-lg mb-6">
                 {cart.products.map((item) => (
                   <div key={item.product._id} className="flex justify-between p-4 items-center">
@@ -157,7 +174,9 @@ export default function CheckoutPage() {
                         className="w-20 h-20 rounded-lg object-cover"
                       />
                       <div>
-                        <p className="font-semibold text-gray-800">{item.product.name}</p>
+                        <p className="font-semibold text-gray-800">
+                          {item.product.name}
+                        </p>
                         <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
                       </div>
                     </div>
@@ -180,6 +199,7 @@ export default function CheckoutPage() {
                 >
                   ← Edit Address
                 </button>
+
                 <button
                   onClick={() => setStep(3)}
                   className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition"
@@ -190,18 +210,31 @@ export default function CheckoutPage() {
             </div>
           )}
 
-          {/* Step 3: Payment */}
+          {/* Step 3 - Payment */}
           {step === 3 && (
-            <div className="animate-fadeIn">
+            <div>
               <h2 className="text-xl font-semibold mb-4 text-gray-700">Payment Method</h2>
+
               <div className="space-y-4">
                 <label className="flex items-center gap-3 p-3 border rounded-lg hover:border-blue-500 cursor-pointer">
-                  <input type="radio" name="payment" defaultChecked />
+                  <input
+                    type="radio"
+                    name="payment"
+                    value="COD"
+                    checked={paymentMethod === "COD"}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                  />
                   <span>Cash on Delivery (COD)</span>
                 </label>
+
                 <label className="flex items-center gap-3 p-3 border rounded-lg hover:border-blue-500 cursor-pointer">
-                  <input type="radio" name="payment" />
-                  <span>UPI / Card (coming soon)</span>
+                  <input
+                    type="radio"
+                    name="payment"
+                    value="UPI"
+                    disabled
+                  />
+                  <span className="text-gray-500">UPI / Card (coming soon)</span>
                 </label>
               </div>
 
@@ -212,6 +245,7 @@ export default function CheckoutPage() {
                 >
                   ← Review Order
                 </button>
+
                 <button
                   onClick={handlePlaceOrder}
                   disabled={loading}
@@ -222,6 +256,7 @@ export default function CheckoutPage() {
               </div>
             </div>
           )}
+
         </div>
       </div>
     </div>

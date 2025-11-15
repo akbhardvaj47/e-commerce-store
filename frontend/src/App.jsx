@@ -27,7 +27,7 @@ import UpdateProduct from "./admin/UpdateProduct";
 import Shop from "./pages/Shop";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrdersPage from "./pages/OrdersPage";
-import AdminRoute from "./Routes/AdminRoute"
+import AdminRoute from "./Routes/AdminRoute";
 import SearchPage from "./pages/SearchPage";
 
 export default function App() {
@@ -44,21 +44,22 @@ export default function App() {
         <Route path="/about" element={<About />} />
         <Route path="/search" element={<SearchPage />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/product/:slug" element={<ProductDetails />} />
+        <Route path="/product/:slug" element={<ProductDetails />} />z
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/forget-password" element={<ForgotPassword />} />
-      <Route path="/cart" element={<ProtectedRoute/>}>
-      <Route index element={<CartPage/>}/>
-      </Route>
+        <Route path="/checkout" element={<CheckoutPage />} />
+        {/* <Route path="/orders" element={<OrdersPage />} /> */}
+        <Route path="/cart" element={<ProtectedRoute />}>
+          <Route index element={<CartPage />} />
+        </Route>
         {/* Protected User Routes */}
         <Route path="/user" element={<ProtectedRoute />}>
           <Route index element={<UserDashboard />} />
           <Route path="profile" element={<UserProfile />} />
-          <Route path="orders" element={<UserOrders />} />
+          <Route path="orders" element={<OrdersPage />} />
           <Route path="settings" element={<UserSettings />} />
         </Route>
-
         {/* Protected Admin Routes */}
         <Route path="/admin" element={<AdminRoute />}>
           <Route index element={<AdminDashboard />} />
@@ -69,7 +70,6 @@ export default function App() {
           <Route path="create-product" element={<CreateProduct />} />
           <Route path="update-product/:slug" element={<UpdateProduct />} />
         </Route>
-
         {/* 404 */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>

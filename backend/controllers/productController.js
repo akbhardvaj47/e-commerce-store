@@ -1,3 +1,4 @@
+import Category from "../models/categoryModel.js";
 import Product from "../models/productModel.js";
 import slugify from "slugify";
 
@@ -168,6 +169,31 @@ const updateProduct = async (req, res) => {
     });
   }
 };
+
+// Find category name from product
+export const getCategoryByProduct=async(req,res)=>{
+  try {
+    const {productId}=req.params;
+    const product=await Product.findById(productId);
+     if (!product) {
+      return res.status(404).json({ success: false, message: "Product not found" });
+    }
+    const category=await Category.findById(product.category)
+     if (!category) {
+      return res.status(404).json({ success: false, message: "Category not found" });
+    }
+
+    res.status(200).json({
+      success:true,
+      categoryName: category.categoryName,
+      category,
+    })
+  } catch (error) {
+    console.log(error);
+        res.status(500).json({ success: false, message: "Server error", error });
+
+  }
+}
 
 
 export { createProduct, getAllProducts, deleteProduct, updateProduct, getSingleProductBySlug }
